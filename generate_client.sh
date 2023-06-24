@@ -1,0 +1,1 @@
+java -jar openapi-generator-cli.jar generate -i ./src/main/resources/api.yaml -c config-spring-client.json -g spring -o ./../openapi/client -psourceFolder=''  -papiPackage='ru.numbDev.MyCalendarVaadin.client.api' -pmodelPackage='ru.numbDev.MyCalendarVaadin.client.dto' --global-property models,apis

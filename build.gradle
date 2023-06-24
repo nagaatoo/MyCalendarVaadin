@@ -1,0 +1,96 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '2.7.12'
+	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+	id 'com.vaadin' version '23.3.14'
+//	id "org.openapi.generator" version "6.6.0"
+}
+
+group = 'ru.numbDev'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	sourceCompatibility = '17'
+}
+
+sourceSets {
+	main {
+		java.srcDirs += './../openapi/client'
+	}
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+ext {
+	set('vaadinVersion', "23.3.14")
+	set('springCloudVersion', "2021.0.3")
+}
+
+
+dependencies {
+// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web
+	implementation 'org.springframework.boot:spring-boot-starter-web:2.7.12'
+
+//// https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-openfeign
+//	implementation 'org.springframework.cloud:spring-cloud-openfeign-core:4.0.3'
+//
+//	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-actuator
+//	implementation 'org.springframework.boot:spring-boot-starter-actuator:2.7.12'
+//
+//
+//	// https://mvnrepository.com/artifact/org.springframework/spring-beans
+//	implementation 'org.springframework:spring-beans'
+//	// https://mvnrepository.com/artifact/org.springframework/spring-core
+//	implementation 'org.springframework:spring-core'
+//
+//
+//	// https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-context
+//	implementation group: 'org.springframework.cloud', name: 'spring-cloud-context', version: '4.0.1'
+//
+// https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-openfeign
+	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign:4.0.3'
+
+//
+//	// https://mvnrepository.com/artifact/io.github.openfeign/feign-core
+//	implementation group: 'io.github.openfeign', name: 'feign-core', version: '12.3'
+//// https://mvnrepository.com/artifact/io.github.openfeign/feign-core
+//	implementation group: 'io.github.openfeign', name: 'feign-slf4j', version: '12.3'
+//
+//	// https://mvnrepository.com/artifact/io.github.openfeign/feign-core
+//	implementation group: 'io.github.openfeign', name: 'feign-okhttp', version: '12.3'
+//
+//	// https://mvnrepository.com/artifact/io.github.openfeign/feign-core
+//	implementation group: 'io.github.openfeign', name: 'feign-jackson', version: '12.3'
+
+
+	// https://mvnrepository.com/artifact/com.fasterxml.jackson.dataformat/jackson-dataformat-xml
+	implementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-xml', version: '2.15.2'
+	// https://mvnrepository.com/artifact/io.swagger.core.v3/swagger-annotations
+	implementation group: 'io.swagger.core.v3', name: 'swagger-annotations', version: '2.2.11'
+	implementation 'org.springframework.cloud:spring-cloud-starter-config'
+	implementation('org.springframework.cloud:spring-cloud-starter-bootstrap')
+
+	implementation 'com.vaadin:vaadin-spring-boot-starter'
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+//	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+dependencyManagement {
+	imports {
+		mavenBom "com.vaadin:vaadin-bom:${vaadinVersion}"
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+	}
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}

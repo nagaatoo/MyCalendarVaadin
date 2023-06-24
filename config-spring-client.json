@@ -1,0 +1,12 @@
+{
+    "library": "spring-cloud",
+    "dateLibrary": "java8",
+    "interfaceOnly": false,
+    "hideGenerationTimestamp": false,
+    "sortParamsByRequiredFlag": false,
+    "openApiNullable": false,
+    "useFeignClientUrl": true,
+    "configPackage": "ru.numbDev.MyCalendarVaadin.conf",
+    "artifactUrl": "app.api.url",
+    "title": "foo"
+}

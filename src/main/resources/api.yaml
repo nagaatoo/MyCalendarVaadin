@@ -1,0 +1,992 @@
+openapi: 3.0.1
+info:
+  description: API для календаря
+  termsOfService: "/tos"
+  title: MyCalendar API
+  version: 0.0.1
+tags:
+  - name: health
+  - name: calendar
+  - name: schedule
+  - name: organization
+  - name: user
+  - name: task
+paths:
+  "/ping":
+    get:
+      responses:
+        '200':
+          description: Сервис доступен
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: pong
+      summary: Проверка доступности сервиса
+      operationId: ping
+      tags:
+        - health
+  "/calendar":
+    get:
+      tags:
+        - calendar
+      operationId: getCalendars
+      description: Получить все календари пользователя
+      parameters:
+        - name: params
+          in: query
+          description: Параметры паринации и фильтрации
+          schema:
+            $ref: '#/components/schemas/Pagable'
+      responses:
+        '200':
+          description: Список календарей
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CalendarList'
+        '400':
+          description: Ошибка запроса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      description: Создать календарь
+      operationId: createCalendar
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CalendarCreate'
+      responses:
+        '201':
+          description: Создано
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Calendar'
+        '400':
+          description: Ошибка запроса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      tags:
+        - calendar
+  "/calendar/holidays/load":
+    post:
+      operationId: loadHolidays
+      description: Обновить праздники
+      responses:
+        '200':
+          description: Обновлено
+        '400':
+          description: Ошибка запроса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      tags:
+        - calendar
+  "/calendar/{id}":
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: Идентификатор календаря
+        schema:
+          type: integer
+          format: int64
+    get:
+      operationId: getCalendar
+      description: Получить объект календаря
+      responses:
+        '200':
+          description: Календарь
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Calendar'
+        '400':
+          description: Ошибка запроса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      description: Обновить календарь
+      operationId: updateCalendar
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CalendarCreate'
+      responses:
+        '201':
+          description: Создано
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Calendar'
+        '400':
+          description: Ошибка запроса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      operationId: deleteCalendar
+      description: Удалить календарь
+      responses:
+        '200':
+          description: Удален
+        '400':
+          description: Ошибка запроса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      tags:
+        - calendar
+  "/schedule/calendar/{calendarId}":
+    description: Расписание
+    parameters:
+      - name: calendarId
+        in: path
+        required: true
+        description: Идентификатор календаря
+        schema:
+          type: integer
+          format: int64
+    post:
+      operationId: createSchedule
+      description: Создать расписание
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScheduleCreate'
+      responses:
+        '201':
+          description: Создано
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Schedule'
+        '400':
+          description: Ошибка запроса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      tags:
+        - schedule
+    get:
+      description: Получить все расписания календаря пользователя
+      operationId: getSchedules
+      parameters:
+        - name: calendarId
+          in: path
+          required: true
+          description: Идентификатор календаря
+          schema:
+            type: integer
+            format: int64
+        - name: pageNo
+          in: query
+          description: Страница
+          schema:
+            type: integer
+        - name: pageSize
+          in: query
+          description: Размер страницы
+          schema:
+            type: integer
+        - name: filter
+          in: query
+          description: Быстрый фильтр
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Список календарей
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScheduleList'
+        '400':
+          description: Ошибка запроса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      tags:
+        - schedule
+  "/schedule/{id}":
+    description: "Расписание"
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: Идентификатор расписания
+        schema:
+          type: integer
+          format: int64
+    put:
+      description: Обновить расписание
+      operationId: updateSchedule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScheduleCreate'
+      responses:
+        '201':
+          description: Создано
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Schedule'
+        '400':
+          description: Ошибка запроса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      tags:
+        - schedule
+    get:
+      description: Получить расписание
+      operationId: getSchedule
+      responses:
+        '200':
+          description: Создано
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Schedule'
+        '400':
+          description: Ошибка запроса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      tags:
+        - schedule
+    delete:
+      description: Удалить расписание
+      operationId: deleteSchedule
+      responses:
+        '200':
+          description: Удалено
+        '400':
+          description: Ошибка запроса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      tags:
+        - schedule
+  "/schedule/{scheduleId}/generate":
+    description: "Расписание"
+    post:
+      description: Создать календарь
+      operationId: generateSchedule
+      parameters:
+        - name: scheduleId
+          in: path
+          required: true
+          description: Идетификатор расписания
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScheduleGenerate'
+      responses:
+        '201':
+          description: Создано
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Schedule'
+        '400':
+          description: Ошибка запроса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      tags:
+        - schedule
+  "/organization":
+    description: Организации
+    post:
+      description: Создать организацию
+      operationId: createOrganization
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrganizationCreate'
+      responses:
+        '201':
+          description: Создано
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+        '400':
+          description: Ошибка запроса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      tags:
+        - organization
+  "/organization/{id}":
+    description: Организации
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: Идентификатор организции
+        schema:
+          type: integer
+          format: int64
+    put:
+      operationId: updateOrganization
+      description: Обновить организацию
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrganizationCreate'
+      responses:
+        '201':
+          description: ОБновлено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+        '400':
+          description: Ошибка запроса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      operationId: deleteOrganization
+      description: Удалено
+      responses:
+        '200':
+          description: Удален
+        '400':
+          description: Ошибка запроса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      tags:
+        - organization
+  "/user":
+    description: Работа с пользователями
+    post:
+      operationId: createUser
+      description: Создать пользователя
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '201':
+          description: Создано
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Ошибка запроса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      tags:
+        - user
+    put:
+      description: Обновить данные учетной записи
+      operationId: updateUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '201':
+          description: Создано
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Ошибка запроса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      tags:
+        - user
+  "/user/auth":
+    description: Авторизация
+    post:
+      operationId: auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserAuth'
+      responses:
+        '201':
+          description: Создано
+          content:
+            text/plain:
+              schema:
+                type: string
+        '400':
+          description: Ошибка запроса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      tags:
+        - user
+  "/task":
+    description: Задачи
+    post:
+      operationId: createTask
+      description: Создать задачу
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskCreate'
+      responses:
+        '201':
+          description: Создано
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '400':
+          description: Ошибка запроса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      tags:
+        - task
+  "/task/{taskId}":
+    description: Задачи
+    parameters:
+      - name: taskId
+        in: path
+        required: true
+        description: Идентификатор задачи
+        schema:
+          type: integer
+          format: int64
+    delete:
+      operationId: deleteTask
+      description: Удалить задачу
+      responses:
+        '200':
+          description: Удалено
+        '400':
+          description: Ошибка запроса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      tags:
+        - task
+  "/task/{taskId}/complete":
+    description: Завершить задачу
+    parameters:
+      - name: taskId
+        in: path
+        required: true
+        description: Идентификатор задачи
+        schema:
+          type: integer
+          format: int64
+    post:
+      operationId: completeTask
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskComplete'
+      responses:
+        '200':
+          description: Завершено
+        '400':
+          description: Ошибка запроса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      tags:
+        - task
+  "/task/{taskId}/approve":
+    description: Утвердить задачу
+    parameters:
+      - name: taskId
+        in: path
+        required: true
+        description: Идентификатор задачи
+        schema:
+          type: integer
+          format: int64
+    post:
+      operationId: approveTask
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskApprove'
+      responses:
+        '200':
+          description: Утверждено
+        '400':
+          description: Ошибка запроса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      tags:
+        - task
+components:
+  schemas:
+    Profile:
+      type: object
+      description: Профиль пользователя
+      properties:
+        login:
+          type: string
+          description: Логин пользователя
+        email:
+          type: string
+          description: email пользователя
+        phone:
+          type: string
+          description: Номер телефона
+        active:
+          type: boolean
+          description: Признак активного пользователя
+        firstName:
+          type: string
+          description: Имя
+        lastName:
+          type: string
+          description: Фамилия
+        middleName:
+          type: string
+          description: Отчество
+    Pagable:
+      type: object
+      description: Параметры пагинации и фильтрации
+      properties:
+        pageNo:
+          type: integer
+          format: int32
+          description: Страница
+        pageSize:
+          type: integer
+          format: int32
+          description: Размер страницы
+        direction:
+          type: string
+          description: Направление
+        offset:
+          type: integer
+          format: int32
+          description: Указатель на страницу
+        limit:
+          type: integer
+          format: int32
+          description: Размер страницы
+        filter:
+          description: Быстрый фильтр
+          type: string
+    User:
+      type: object
+      description: Метаданные пользователя
+      properties:
+        login:
+          type: string
+          description: Логин
+        FIO:
+          type: string
+          description: Полное имя пользователя
+    UserAuth:
+      type: object
+      properties:
+        login:
+          type: string
+        password:
+          type: string
+    Organization:
+      type: object
+      description: Метаданные организации
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+          description: Наименование
+        email:
+          type: string
+          description: email организации
+    OrganizationCreate:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Наименование
+        email:
+          type: string
+          description: email организации
+    ScheduleCreate:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        workDays:
+          type: integer
+          description: Диапазон рабочих дней
+        weekendDays:
+          type: integer
+          description: Диапазон не рабочих дней
+        title:
+          type: string
+          description: Название
+        ownerHoliday:
+          type: array
+          description: Выходные дни, установленные владельцем
+          items:
+            type: string
+            format: date
+        schedule:
+          type: array
+          description: Сетка расписания
+          items:
+            $ref: '#/components/schemas/ScheduleElement'
+    ScheduleGenerate:
+      type: object
+      properties:
+        workDays:
+          type: integer
+          format: int32
+        withOfficialHolidays:
+          type: boolean
+        title:
+          type: string
+        startDate:
+          type: string
+        periodOfSchedule:
+          type: string
+        holidays:
+          type: array
+          items:
+            type: string
+            format: date
+        managers:
+          type: array
+          items:
+            type: string
+        users:
+          type: array
+          items:
+            type: string
+    Schedule:
+      type: object
+      description: Расписание
+      properties:
+        id:
+          type: integer
+          format: int64
+        workDays:
+          type: integer
+          description: Диапазон рабочих дней
+        weekendDays:
+          type: integer
+          description: Диапазон не рабочих дней
+        createdBy:
+          type: string
+          description: Создатель
+        created:
+          type: string
+          format: date
+          description: Дата создания
+        updatedBy:
+          type: string
+          description: Обновлено
+        update:
+          type: string
+          format: date
+          description: Дата обновления
+        ownerHoliday:
+          type: array
+          description: Выходные дни, установленные владельцем
+          items:
+            type: string
+            format: date
+        schedule:
+          type: array
+          description: Сетка расписания
+          items:
+            $ref: '#/components/schemas/ScheduleElement'
+    ScheduleElement:
+      type: object
+      properties:
+        user:
+          type: string
+          description: Пользователь, член команды
+        workDays:
+          type: array
+          items:
+            type: string
+            format: date
+    ScheduleShort:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        title:
+          type: string
+          description: Наименование
+        workDays:
+          type: integer
+          description: Диапазон рабочих дней
+        weekendDays:
+          type: integer
+          description: Диапазон не рабочих дней
+    ScheduleList:
+      type: object
+      description: Список расписаний
+      properties:
+        pageNo:
+          type: integer
+          description: Номер страницы
+        pageSize:
+          type: integer
+          description: Размер страницы
+        size:
+          type: integer
+          format: int64
+          description: Общее количество календарей
+        schedules:
+          $ref: '#/components/schemas/ScheduleShort'
+    Calendar:
+      type: object
+      description: Календарь
+      properties:
+        id:
+          type: integer
+          format: int64
+        title:
+          type: string
+          description: Наименование
+        owner:
+          type: object
+          description: Логин владельца
+        organization:
+          $ref: '#/components/schemas/Organization'
+        schedules:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScheduleShort'
+        createdBy:
+          type: string
+          description: Создатель
+        created:
+          type: string
+          format: date
+          description: Дата создания
+        updatedBy:
+          type: string
+          description: Обновлено
+        update:
+          type: string
+          format: date
+          description: Дата обновления
+    CalendarCreate:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Наименование
+        ownerLogin:
+          type: string
+        organizationId:
+          type: integer
+          format: int64
+          description: Организация
+    CalendarShort:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        title:
+          type: string
+          description: Наименование
+        organization:
+          $ref: '#/components/schemas/Organization'
+    CalendarList:
+      type: object
+      description: Список календарей пользователя
+      properties:
+        pageNo:
+          type: integer
+          description: Номер страницы
+        pageSize:
+          type: integer
+          description: Размер страницы
+        size:
+          type: integer
+          format: int64
+          description: Общее количество календарей
+        calendars:
+          type: array
+          items:
+            $ref: '#/components/schemas/CalendarShort'
+    Task:
+      type: object
+      description: Задача
+      properties:
+        text:
+          type: string
+          description: Описание
+        done:
+          type: boolean
+          description: Завершена
+        userLogin:
+          type: string
+          description: Исполнитель
+        userControl:
+          type: string
+          description: Проверяющий
+        approved:
+          type: boolean
+          description: Проверяющий проверил задачу
+        approvingComment:
+          type: string
+          description: Комментарий проверяющего
+        date:
+          type: string
+          format: date
+          description: Дата задачи
+        deadline:
+          type: string
+          format: date
+          description: Срок
+        approveTask:
+          type: string
+          format: date
+          description: Дата проверки
+        completeTask:
+          type: string
+          format: date
+          description: Дата завершения
+        order:
+          type: integer
+          format: int32
+          description: Очередность в группе
+        createdBy:
+          type: string
+          description: Создатель
+        created:
+          type: string
+          format: date
+          description: Дата создания
+        updatedBy:
+          type: string
+          description: Обновлено
+        update:
+          type: string
+          format: date
+          description: Дата обновления
+    TaskCreate:
+      type: object
+      description: Задача
+      properties:
+        text:
+          type: string
+          description: Описание
+        userLogin:
+          type: string
+          description: Исполнитель
+        userControl:
+          type: string
+          description: Проверяющий
+        deadline:
+          type: string
+          format: date
+          description: Срок
+        groupUuid:
+          type: string
+          description: id группы
+        order:
+          type: integer
+          format: int32
+          description: Очередность в группе
+        personal:
+          type: boolean
+          description: Личная задача
+        calendarId:
+          type: integer
+          format: int64
+          description: id календаря
+        scheduleId:
+          type: integer
+          format: int64
+          description: id расписания
+    TaskComplete:
+      type: object
+      description: Параметры завершенной задачи
+      properties:
+        done:
+          type: boolean
+          description: Признак выполненной задачи
+        completeText:
+          type: string
+          description: Результат
+    TaskApprove:
+      type: object
+      description: Параметры проверки задачи
+      properties:
+        approved:
+          type: boolean
+          description: Проверяющий проверил задачу
+        approvingComment:
+          type: string
+          description: Комментарий проверяющего
+    Error:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          description: Время исключения
+        message:
+          type: string
+          description: Описание ошибки
+        serviceName:
+          type: string
+          description: Имя недоступного интеграционного сервиса
