@@ -9,15 +9,7 @@ import org.springframework.stereotype.Component;
 import ru.numbDev.MyCalendarVaadin.model.Pages;
 import ru.numbDev.MyCalendarVaadin.model.SystemConst;
 
-@Component
-@Scope("prototype")
-@Route(Pages.CALENDAR_LIST)
-@PageTitle("Календари")
-public class CalendarPage extends Page {
 
-    public CalendarPage() {
-        String token = (String) VaadinSession.getCurrent().getAttribute(SystemConst.JWT.name());
-        addContent(new Label(token));
-    }
+public class WorkPage extends Page {
 
 }
